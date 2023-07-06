@@ -234,6 +234,12 @@ func (g *JSONSchemaGenerator) addCommonAttrs(schema schema.JSONSchema, anno *sch
 		schema.SetDescription(anno.description)
 	}
 
+	if len(anno.enum) > 0 {
+		if len(anno.anyOf) > 0 || len(anno.allOf) > 0 || len(anno.oneOf) > 0 {
+			return fmt.Errorf("error setting 'enum', one of these present['anyOf', 'allOf', 'oneOf']")
+		}
+	}
+
 	if len(anno.allOf) > 0 {
 		schemas, err := g.generateSchemasFromTypePaths(anno.allOf, parentKey)
 		if err != nil {
@@ -309,9 +315,7 @@ func (g *JSONSchemaGenerator) addNumericAttrsForField(schema schema.NumericSchem
 		return nil
 	}
 
-	g.populateNumericAttrs(schema, schemaAnno)
-
-	return nil
+	return g.populateNumericAttrs(schema, schemaAnno)
 }
 
 func (g *JSONSchemaGenerator) populateStringAttrs(schema schema.StringSchema, anno *schemaAnno) {
@@ -336,12 +340,14 @@ func (g *JSONSchemaGenerator) populateStringAttrs(schema schema.StringSchema, an
 		schema.SetMinLength(anno.minLength)
 	}
 
+	if len(anno.enum) > 0 {
+		schema.SetEnum(anno.enum)
+	}
 }
 
-func (g *JSONSchemaGenerator) populateNumericAttrs(schema schema.NumericSchema, anno *schemaAnno) {
-
+func (g *JSONSchemaGenerator) populateNumericAttrs(schema schema.NumericSchema, anno *schemaAnno) error {
 	if schema == nil || anno == nil {
-		return
+		return nil
 	}
 
 	if anno.maximum > -1 {
@@ -357,6 +363,12 @@ func (g *JSONSchemaGenerator) populateNumericAttrs(schema schema.NumericSchema, 
 	if anno.multipleOf > -1 {
 		schema.SetMultipleOf(anno.multipleOf)
 	}
+
+	if len(anno.enum) > 0 {
+		return schema.SetIntEnum(anno.enum)
+	}
+
+	return nil
 }
 
 func (g *JSONSchemaGenerator) addArrayAttrsForField(schema schema.ArraySchema, field *ast.Field) error {

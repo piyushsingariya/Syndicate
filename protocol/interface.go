@@ -7,7 +7,7 @@ import (
 )
 
 type Connector interface {
-	Setup(config, catalog interface{}, state models.State, batchSize int64) error
+	Setup(config any, catalog *models.Catalog, state models.State, batchSize int64) error
 	Spec() (schema.JSONSchema, error)
 	Check() error
 	Discover() ([]*models.Stream, error)
@@ -34,7 +34,6 @@ type Stream interface {
 	Namespace() string
 	JSONSchema() *models.Schema
 	GetStream() *models.Stream
-	SupportedSyncModes() []types.SyncMode
 	GetSyncMode() types.SyncMode
 	GetCursorField() string
 }

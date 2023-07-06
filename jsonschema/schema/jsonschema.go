@@ -84,11 +84,13 @@ type JSONSchema interface {
 	SetRef(ref string)
 	SetTitle(title string)
 	SetDescription(description string)
+	SetEnum(items []string)
+	SetIntEnum(items []string) error
 	SetAllOf(items []JSONSchema)
 	SetAnyOf(items []JSONSchema)
 	SetOneOf(items []JSONSchema)
 	SetNot(not JSONSchema)
-	SetDefault(def interface{})
+	SetDefault(def string) error
 	SetConstant(def interface{})
 	SetType(typeList string)
 }
@@ -159,6 +161,15 @@ func FromJSON(js []byte) (JSONSchema, error) {
 
 	return obj, err
 
+}
+
+// strings enums not supported
+func (s *basicSchema) SetEnum(enums []string) {
+}
+
+// int enums not supported
+func (s *basicSchema) SetIntEnum(enums []string) error {
+	return nil
 }
 
 // NewBasicSchema creates a new BasicSchema
@@ -365,8 +376,10 @@ func (s *basicSchema) SetNot(not JSONSchema) {
 	s.Not = not
 }
 
-func (s *basicSchema) SetDefault(def interface{}) {
+func (s *basicSchema) SetDefault(def string) error {
 	s.DefaultValue = def
+
+	return nil
 }
 
 func (s *basicSchema) SetConstant(constant interface{}) {

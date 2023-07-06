@@ -20,7 +20,7 @@ type GoogleSheets struct {
 	catalog *kakumodels.Catalog
 }
 
-func (gs *GoogleSheets) Setup(config, catalog interface{}, _ kakumodels.State, _ int64) error {
+func (gs *GoogleSheets) Setup(config any, catalog *kakumodels.Catalog, _ kakumodels.State, _ int64) error {
 	conf := &models.Config{}
 	if err := utils.Unmarshal(config, conf); err != nil {
 		return err
@@ -30,14 +30,7 @@ func (gs *GoogleSheets) Setup(config, catalog interface{}, _ kakumodels.State, _
 		return fmt.Errorf("failed to validate config: %s", err)
 	}
 
-	if catalog != nil {
-		cat := &kakumodels.Catalog{}
-		if err := utils.Unmarshal(catalog, cat); err != nil {
-			return err
-		}
-
-		gs.catalog = cat
-	}
+	gs.catalog = catalog
 
 	client, err := NewClient(conf)
 	if err != nil {

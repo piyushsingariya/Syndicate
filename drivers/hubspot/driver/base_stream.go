@@ -153,7 +153,7 @@ func (s *Stream) setSyncModes(modes []types.SyncMode) {
 }
 
 func (s *Stream) ScopeIsGranted(grantedScopes []string) bool {
-	s.grantedScopes = utils.Set(grantedScopes)
+	s.grantedScopes = types.Set(grantedScopes)
 	return utils.IsSubset(grantedScopes, s.scopes)
 }
 
@@ -413,7 +413,7 @@ func (s *Stream) parseResponse(response interface{}) ([]types.RecordData, error)
 		}
 
 		if response[s.dataField] == nil {
-			logger.Fatalf("Unexpected API response: %s not in %v", s.dataField, utils.Keys(response))
+			logger.Fatalf("Unexpected API response: %s not in %v", s.dataField, types.Keys(response))
 		}
 
 		// read records in the data field of response
@@ -477,11 +477,4 @@ func (s *Stream) readStreamRecords(nextPageToken map[string]any, f func() (path,
 	}
 
 	return records, response, nil
-}
-
-func (s *Stream) reformatRecord(record map[string]any) kakumodels.Record {
-	return kakumodels.Record{
-		Stream: s.Name(),
-		Data:   record,
-	}
 }

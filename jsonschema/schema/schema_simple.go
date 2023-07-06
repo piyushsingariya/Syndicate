@@ -23,6 +23,15 @@ func NewSimpleSchema(jsonType string) SimpleSchema {
 	}
 }
 
+// enums not supported in simple schema
+func (s *defaultSimpleSchema) SetEnum(enums []string) {
+}
+
+// enums not supported in simple schema
+func (s *defaultSimpleSchema) SetIntEnum(enums []string) error {
+	return nil
+}
+
 func (s *defaultSimpleSchema) UnmarshalJSON(b []byte) error {
 	var err error
 	var stuff map[string]interface{}

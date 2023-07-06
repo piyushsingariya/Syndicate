@@ -1,9 +1,7 @@
-package utils
+package types
 
 import (
 	"time"
-
-	"github.com/piyushsingariya/kaku/types"
 )
 
 func String(str string) *string {
@@ -26,7 +24,7 @@ func Time(t time.Time) *time.Time {
 	return &t
 }
 
-func DataTypePtr(dt types.DataType) *types.DataType {
+func DataTypePtr(dt DataType) *DataType {
 	return &dt
 }
 
@@ -53,30 +51,7 @@ func Keys[T comparable](v map[T]any) []T {
 	return setArray
 }
 
-func IsSubset[T comparable](setArray, subsetArray []T) bool {
-	set := make(map[T]bool)
-	for _, item := range setArray {
-		set[item] = true
-	}
-
-	for _, item := range subsetArray {
-		if _, found := set[item]; !found {
-			return false
-		}
-	}
-
-	return true
-}
-
-func MaxDate(v1, v2 time.Time) time.Time {
-	if v1.After(v2) {
-		return v1
-	}
-
-	return v2
-}
-
-func ToChannel[T any](arr []T, buffer int64) <-chan T {
+func Channel[T any](arr []T, buffer int64) <-chan T {
 	var channel chan T
 	if buffer > 0 {
 		channel = make(chan T, buffer)

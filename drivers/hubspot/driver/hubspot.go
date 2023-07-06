@@ -26,7 +26,7 @@ type Hubspot struct {
 	state       kakumodels.State
 }
 
-func (h *Hubspot) Setup(config, catalog interface{}, state kakumodels.State, batchSize int64) error {
+func (h *Hubspot) Setup(config any, catalog *kakumodels.Catalog, state kakumodels.State, batchSize int64) error {
 	conf := &models.Config{}
 	if err := utils.Unmarshal(config, conf); err != nil {
 		return err
@@ -36,20 +36,12 @@ func (h *Hubspot) Setup(config, catalog interface{}, state kakumodels.State, bat
 		return fmt.Errorf("failed to validate config: %s", err)
 	}
 
-	if catalog != nil {
-		cat := &kakumodels.Catalog{}
-		if err := utils.Unmarshal(catalog, cat); err != nil {
-			return err
-		}
-
-		h.catalog = cat
-	}
-
 	client, accessToken, err := newClient(conf)
 	if err != nil {
 		return err
 	}
 
+	h.catalog = catalog
 	h.config = conf
 	h.state = state
 	h.batchSize = batchSize
@@ -79,7 +71,7 @@ func (h *Hubspot) Discover() ([]*kakumodels.Stream, error) {
 		}
 
 		if hstream.cursorField() != "" {
-			stream.DefaultCursorField = append(stream.DefaultCursorField, hstream.cursorField())
+			stream.DefaultCursorFields = append(stream.DefaultCursorFields, hstream.cursorField())
 			stream.SourceDefinedCursor = true
 		}
 
@@ -112,10 +104,10 @@ func (h *Hubspot) GetState() (*kakumodels.State, error) {
 		if stream.SyncMode == types.Incremental {
 			hubspotStream, found := h.allStreams[stream.Name()]
 			if !found {
-				logger.Fatalf("hubspot stream not found while getting state of incremental stream[%s]", stream.Name())
+				return nil, fmt.Errorf("hubspot stream not found while getting state of incremental stream[%s]", stream.Name())
 			}
 
-			if utils.ArrayContains(hubspotStream.Modes(), types.Incremental) {
+			if !utils.ArrayContains(hubspotStream.Modes(), types.Incremental) {
 				logger.Warnf("Skipping getting state from stream[%s], this stream doesn't support incremental", stream.Name())
 				continue
 			}

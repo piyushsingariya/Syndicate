@@ -41,6 +41,7 @@ type schemaAnno struct {
 	multipleOf           float64
 	maxProperties        int64
 	minProperties        int64
+	enum                 []string
 	allOf                []string
 	oneOf                []string
 	anyOf                []string
@@ -206,6 +207,15 @@ func (f *schemaAnnoFactory) ValidateAndCreate(name string, attrs map[string][]st
 				return nil, fmt.Errorf("error setting @jsonSchema 'minProperties': %s", err)
 			}
 			anno.minProperties = i
+
+		case "enum":
+			for _, item := range v {
+				if isSelfRef(item) || isPackageType(item) {
+					return nil, fmt.Errorf("error setting '%s' @jsonSchema 'enum': enum can not be a type selector", item)
+				} else {
+					anno.enum = append(anno.enum, item)
+				}
+			}
 
 		case "allof":
 			for _, item := range v {

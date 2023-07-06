@@ -416,7 +416,10 @@ func (g *JSONSchemaGenerator) generateSchemaForExpr(ownerDecl *declInfo, fieldEx
 							g.populateStringAttrs(simpleSchema.(schema.StringSchema), anno)
 
 						case "number", "integer":
-							g.populateNumericAttrs(simpleSchema.(schema.NumericSchema), anno)
+							err := g.populateNumericAttrs(simpleSchema.(schema.NumericSchema), anno)
+							if err != nil {
+								return nil, err
+							}
 						}
 
 						g.simpleTypeCache[foundDecl.defKey] = &definition{

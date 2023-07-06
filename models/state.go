@@ -13,7 +13,7 @@ func (s *State) Add(stream, namespace string, state map[string]any) {
 
 func (s *State) Get(streamName, namespace string) map[string]any {
 	for _, stream := range *s {
-		if stream.Stream == streamName {
+		if stream.Stream == streamName && stream.Namespace == namespace {
 			return stream.State
 		}
 	}
@@ -21,8 +21,12 @@ func (s *State) Get(streamName, namespace string) map[string]any {
 	return nil
 }
 
+func (s *State) Len() int {
+	return len(*s)
+}
+
 type StreamState struct {
 	Stream    string         `json:"stream"`
 	Namespace string         `json:"namespace"`
-	State     map[string]any `json:"state"`
+	State     map[string]any `mapstructure:"state" json:"state"`
 }

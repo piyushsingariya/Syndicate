@@ -21,7 +21,7 @@ type Stream struct {
 	SupportedSyncModes         []types.SyncMode  `json:"supported_sync_modes,omitempty"`
 	SourceDefinedPrimaryKey    []string          `json:"source_defined_primary_key,omitempty"`
 	SourceDefinedCursor        bool              `json:"source_defined_cursor"`
-	DefaultCursorField         []string          `json:"default_cursor_field,omitempty"`
+	DefaultCursorFields        []string          `json:"default_cursor_fields,omitempty"`
 	AdditionalProperties       string            `json:"additional_properties,omitempty"`
 	AdditionalPropertiesSchema schema.JSONSchema `json:"additional_properties_schema,omitempty"`
 }

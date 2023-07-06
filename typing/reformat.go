@@ -40,12 +40,30 @@ func ReformatValue(dataType types.DataType, v any) (any, error) {
 	case types.NULL:
 		return nil, nil
 	case types.BOOL:
-		// reformat boolean
-		booleanValue, ok := v.(bool)
-		if ok {
+		switch booleanValue := v.(type) {
+		case bool:
 			return booleanValue, nil
+		case string:
+			switch booleanValue {
+			case "1", "t", "T", "true", "TRUE", "True", "YES", "Yes", "yes":
+				return true, nil
+			case "0", "f", "F", "false", "FALSE", "False", "NO", "No", "no":
+				return false, nil
+			}
+		case int, int16, int32, int64, int8:
+			switch booleanValue {
+			case 1:
+				return true, nil
+			case 0:
+				return true, nil
+			default:
+				return nil, fmt.Errorf("found to be boolean, but value is not boolean : %v", v)
+			}
+		default:
+			return nil, fmt.Errorf("found to be boolean, but value is not boolean : %v", v)
 		}
-		return v, fmt.Errorf("found to be boolean, but value is not boolean : %v", v)
+
+		return nil, fmt.Errorf("found to be boolean, but value is not boolean : %v", v)
 	case types.INT64:
 		return ReformatInt64(v)
 	case types.TIMESTAMP:

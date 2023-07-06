@@ -15,16 +15,3 @@ const (
 )
 
 type RecordData = map[string]any
-type Dict map[string]any
-
-func (d Dict) Merge(other Dict) {
-	for key, value := range other {
-		d[key] = value
-	}
-}
-
-func (d Dict) Add(key string, value any) Dict {
-	d[key] = value
-
-	return d
-}

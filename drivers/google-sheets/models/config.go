@@ -3,7 +3,7 @@ package models
 import (
 	"fmt"
 
-	"github.com/piyushsingariya/kaku/utils"
+	"github.com/piyushsingariya/kaku/types"
 )
 
 type Config struct {
@@ -37,7 +37,7 @@ type Service struct {
 
 func (c *Config) ValidateAndPopulateDefaults() error {
 	if c.NameConversion == nil {
-		c.NameConversion = utils.Bool(true)
+		c.NameConversion = types.Bool(true)
 	}
 
 	if c.Credentials == nil {

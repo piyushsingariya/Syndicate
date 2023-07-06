@@ -118,12 +118,12 @@ func (c *CRMSearchStream) readRecords(send chan<- kakumodels.Record) error {
 				return err
 			}
 			if latest_cursor != nil {
-				latest_cursor = utils.Time(utils.MaxDate(cursor, *latest_cursor))
+				latest_cursor = types.Time(utils.MaxDate(cursor, *latest_cursor))
 			} else {
 				latest_cursor = &cursor
 			}
 
-			if !safego.Insert(send, c.reformatRecord(record)) {
+			if !safego.Insert(send, utils.ReformatRecord(c.Name(), "", record)) {
 				// channel was closed
 				return nil
 			}

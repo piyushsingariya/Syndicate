@@ -2,6 +2,8 @@ package schema
 
 import (
 	"encoding/json"
+	"fmt"
+	"strconv"
 )
 
 // NumericSchema represents the schema for a JSON number.
@@ -24,6 +26,7 @@ type defaultNumericSchema struct {
 	*defaultSimpleSchema
 	Maximum          float64 `json:"maximum,omitempty"`
 	Minimum          float64 `json:"minimum,omitempty"`
+	Enums            []int   `json:"enum,omitempty"`
 	MultipleOf       float64 `json:"multipleOf,omitempty"`
 	ExclusiveMaximum bool    `json:"exclusiveMaximum,omitempty"`
 	ExclusiveMinimum bool    `json:"exclusiveMinimum,omitempty"`
@@ -36,6 +39,31 @@ func NewNumericSchema(jsonType string) NumericSchema {
 			basicSchema: NewBasicSchema(jsonType).(*basicSchema),
 		},
 	}
+}
+
+// int enums not supported in arrays
+func (s *defaultNumericSchema) SetIntEnum(enums []string) error {
+	for _, item := range enums {
+		val, err := strconv.Atoi(item)
+		if err != nil {
+			return fmt.Errorf("failed to parse enum[%s] in integer: %s", item, err)
+		}
+
+		s.Enums = append(s.Enums, val)
+	}
+
+	return nil
+}
+
+func (s *defaultNumericSchema) SetDefault(def string) error {
+	reformat, err := strconv.Atoi(def)
+	if err != nil {
+		return fmt.Errorf("failed to reformate to int: %s", err)
+	}
+
+	s.DefaultValue = reformat
+
+	return nil
 }
 
 func (s *defaultNumericSchema) UnmarshalJSON(b []byte) error {

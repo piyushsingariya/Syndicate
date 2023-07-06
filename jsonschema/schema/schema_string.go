@@ -18,9 +18,10 @@ type StringSchema interface {
 
 type defaultStringSchema struct {
 	*defaultSimpleSchema
-	Pattern   string `json:"pattern,omitempty"`
-	MaxLength int64  `json:"maxLength,omitempty"`
-	MinLength int64  `json:"minLength,omitempty"`
+	Pattern   string   `json:"pattern,omitempty"`
+	MaxLength int64    `json:"maxLength,omitempty"`
+	Enums     []string `json:"enum,omitempty"`
+	MinLength int64    `json:"minLength,omitempty"`
 }
 
 // NewStringSchema creates a new string schema.
@@ -30,6 +31,10 @@ func NewStringSchema() StringSchema {
 			basicSchema: NewBasicSchema(SchemaTypeString).(*basicSchema),
 		},
 	}
+}
+
+func (s *defaultStringSchema) SetEnum(enums []string) {
+	s.Enums = append(s.Enums, enums...)
 }
 
 func (s *defaultStringSchema) UnmarshalJSON(b []byte) error {
